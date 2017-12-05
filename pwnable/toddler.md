@@ -53,4 +53,33 @@ Ran strings again
 
 Looked for that malloc message again and above it was the answer
 
+## passcode
+The main idea behind this pwnable is how the function works. We run two functions within the 
+main function, so there would be an overlap of memory that is used because of the LIFO way
+that a stack works. 
+
+mov vs lea assembly command
+mov: copies the value pointed at by an address
+lea: calculated the address and loads it into the register, not the value
+
+so, since there are scanf() functions being used, and that function uses mov, we can load any
+address in. So, if we can set the initial value of passcode1 to an address we know, we can then
+write any value to that address when we get to it. 
+
+So in the welcome function we find the location of the buffer, and in the login  function we find
+the address of passcode 1. We then find the amount of memory between the two. Then we fill our 
+welcome function with arbitrary values for the size that we got and then we have to put in an address.
+
+So, to make this work we can put in the address of a function that will get called, like fflush(). 
+We can get the address of fflush() by running ```objdump -R passcode```. Then we need to figure out
+what we want to replace fflush with. We can then put in the assembly line where we get the flag.
+
+So the input comes out to be 96 arbitrary characters + address of fflush() + address of assembly that
+gives us the flag. 
+
+In the end we get: Python
+
+```python -c "print 96*'A'+'\x04\xa0\x04\x08'+'134514147'" | ./passcode ```
+
+
 
